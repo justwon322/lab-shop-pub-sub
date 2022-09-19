@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import labshoppubsub.DeliveryApplication;
+import labshoppubsub.domain.DeliveryStarted;
 import lombok.Data;
 
 @Entity
@@ -18,6 +19,12 @@ public class Delivery {
     private String customerid;
 
     private Long orderid;
+
+    @PostPersist
+    public void onPostPersist() {
+        DeliveryStarted deliveryStarted = new DeliveryStarted(this);
+        deliveryStarted.publishAfterCommit();
+    }
 
     public static DeliveryRepository repository() {
         DeliveryRepository deliveryRepository = DeliveryApplication.applicationContext.getBean(
